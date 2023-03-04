@@ -23,25 +23,38 @@ namespace FlyingKarlsonMod
 
 		public override void OnLevelWasLoaded(int level)
 		{
-			GameObject mainPlayer = GameObject.Find("PlayerAndCamera");
-			//Rigidbody rb = mainPlayer.GetComponentInChildren<Rigidbody>();
+			GameObject mainPlayer = GameObject.Find("Player");
+			Rigidbody rb = mainPlayer.GetComponentInChildren<Rigidbody>();
 
 			if (mainPlayer != null)
 			{
-				LoggerInstance.Msg("Found GameObject named 'PlayerAndCamera'");
+				LoggerInstance.Msg("Found GameObject named 'Player'");
 			}
 			else
 			{
-				LoggerInstance.Msg("Could not find GameObject named 'PlayerAndCamera'");
+				LoggerInstance.Msg("Could not find GameObject named 'Player'");
 			}
 			if (mainPlayer == null)
 			{
 				LoggerInstance.Warning("mainPlayer is null!");
 			}
+
+			if (rb != null)
+			{
+				LoggerInstance.Msg("Rigidbody found on mainPlayer!");
+			}
+			else
+            {
+				LoggerInstance.Msg("Rigidbody not found on mainPlayer!");
+			}
 		}
 		public override void OnUpdate()
         {
 			Time.timeScale = TimeModification;
+
+			//float num3 = 50f;
+			//float walkSpeed = 0f;
+			//float runSpeed = 0f;
 
             if (Input.GetKeyDown(KeyCode.N))
             {
@@ -111,7 +124,22 @@ namespace FlyingKarlsonMod
 			if (Input.GetKeyDown(KeyCode.C))
             {
 				LoggerInstance.Msg("Air Jumping...");
-				mainPlayer.transform.Translate(new Vector3(0, 20, 0));
+				GameObject mainPlayer = GameObject.Find("Player");
+				Rigidbody rb = mainPlayer.GetComponentInChildren<Rigidbody>();
+				MonoBehaviour.print("jumping");
+				Vector3 velocity = rb.velocity;
+				this.readyToJump = true;
+				rb.AddForce(Vector2.up * this.jumpForce * 3f);
+				rb.AddForce(this.normalVector * this.jumpForce * 1f);
+				if (rb.velocity.y < 0.5f)
+				{
+					rb.velocity = new Vector3(velocity.x, 0f, velocity.z);
+				}
+				else if (rb.velocity.y > 0f)
+				{
+					rb.velocity = new Vector3(velocity.x, velocity.y / 2f, velocity.z);
+				}
+				this.readyToJump = true;
 				LoggerInstance.Msg("Air Jumped!");
 			}
 
@@ -119,7 +147,7 @@ namespace FlyingKarlsonMod
 			//           {
 			//if (mainPlayer == null)
 			//               {
-			// mainPlayer = GameObject.Find("PlayerAndCamera");
+			// mainPlayer = GameObject.Find("Player");
 			// return;
 			//               }
 			//
@@ -166,18 +194,20 @@ namespace FlyingKarlsonMod
 
         private void Jump()
         {
-                MonoBehaviour.print("jumping");
-                Vector3 velocity = this.rb.velocity;
-                this.readyToJump = false;
-                this.rb.AddForce(Vector2.up * this.jumpForce * 1.5f);
-                this.rb.AddForce(this.normalVector * this.jumpForce * 0.5f);
-                if (this.rb.velocity.y < 0.5f)
+				GameObject mainPlayer = GameObject.Find("Player");
+				Rigidbody rb = mainPlayer.GetComponentInChildren<Rigidbody>();
+				MonoBehaviour.print("jumping");
+                Vector3 velocity = rb.velocity;
+                this.readyToJump = true;
+                rb.AddForce(Vector2.up * this.jumpForce * 1.5f);
+                rb.AddForce(this.normalVector * this.jumpForce * 0.5f);
+                if (rb.velocity.y < 0.5f)
                 {
-                    this.rb.velocity = new Vector3(velocity.x, 0f, velocity.z);
+                    rb.velocity = new Vector3(velocity.x, 0f, velocity.z);
                 }
-                else if (this.rb.velocity.y > 0f)
+                else if (rb.velocity.y > 0f)
                 {
-                    this.rb.velocity = new Vector3(velocity.x, velocity.y / 2f, velocity.z);
+                    rb.velocity = new Vector3(velocity.x, velocity.y / 2f, velocity.z);
                 }
         }
 
